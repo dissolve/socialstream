@@ -10,7 +10,8 @@
     }
   ],
   "require": {
-    "tantek/cassis": "0.1.16124"
+    "tantek/cassis": "*",
+    "mf2/mf2": "*"
   },
   "autoload": {
     "files": [
