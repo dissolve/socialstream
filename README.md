@@ -1,4 +1,4 @@
-Comments Presentation
+Social Streams
 =====================
 
 Given some microformats return a simplified JSON version of it
