@@ -1,0 +1,20 @@
+{
+  "name": "dissolve/socialstream",
+  "type": "library",
+  "keywords": ["indieweb"],
+  "license": "Apache-2.0",
+  "authors" : [
+    {
+      "name": "Ben Roberts",
+      "homepage": "https://ben.thatmustbe.me"
+    }
+  ],
+  "require": {
+    "tantek/cassis": "0.1.16124"
+  },
+  "autoload": {
+    "files": [
+      "src/indieweb/socialstream.php"
+    ]    
+  }
+}
