@@ -9,13 +9,14 @@ function clean_node($in)
     }
 
     //array handling
-    $in = clean_array($in);
+    $in = clean_array_before_recurse($in);
 
     //$res = array();
     foreach ($in as &$item) {
         $item = clean_node($item);
     }
 
+    $in = clean_array_after_recurse($in);
 
     if (count($in) == 1) {
         return array_shift($in);
@@ -31,7 +32,7 @@ function clean_node($in)
 
 }
 
-function clean_array($in)
+function clean_array_before_recurse($in)
 {
     if (isset($in['alternates'])) {
         unset($in['alternates']);
@@ -44,6 +45,14 @@ function clean_array($in)
     }
     if (isset($in['value'])) {
         unset($in['value']);
+    }
+    return $in;
+}
+
+function clean_array_after_recurse($in)
+{
+    if (isset($in['url']) && !is_array($in['url']) && !isset($in['@id'])) {
+       $in['@id'] = $in['url']; 
     }
     return $in;
 }
