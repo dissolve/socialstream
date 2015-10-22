@@ -33,8 +33,17 @@ function clean_node($in)
 
 function clean_array($in)
 {
+    if (isset($in['alternates'])) {
+        unset($in['alternates']);
+    }
     if (isset($in['rels'])) {
         unset($in['rels']);
+    }
+    if (isset($in['type'])) {
+        unset($in['type']);
+    }
+    if (isset($in['value'])) {
+        unset($in['value']);
     }
     return $in;
 }
