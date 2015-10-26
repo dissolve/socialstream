@@ -165,17 +165,31 @@ class StreamCleaner
 
     private function sanitizeUrl($url)
     {
-        //TODO Do something here
+        $split_url = parse_url($url);
+        if(!isset($split_url['host']) || empty($split_url['host'])) {
+            $split_url['host'] = parse_url($this->url_base, PHP_URL_HOST);
+            $split_url['scheme'] = parse_url($this->url_base, PHP_URL_SCHEME);
+        }
+        $url = $split_url['scheme'] . "://" . $split_url['host'] . $split_url['path'] .
+            (isset($split_url['query']) ? '?' . $split_url['query']  : '' ) .
+            (isset($split_url['fragment']) ? '#' . $split_url['fragment']  : '' );
+        
         return $url;
     }
 
 
     public function clean($mf, $base_url = "", $lang = 'en')
     {
-        $url_base = $base_url ;
+        $this->url_base = $base_url ;
         $cleaned = $this->cleanNode($mf);
+
+        //brutal hack until lang is obtained from the mf2 parser
         if ($this->isHash($cleaned)) {
-            $cleaned['language'] = $lang;
+            $cleaned['lang'] = $lang;
+        } elseif ( is_array($cleaned) ) {
+            foreach($cleaned as &$entry){
+                $entry['lang'] = $lang;
+            }
         }
 
         return $cleaned;
@@ -188,6 +202,7 @@ class StreamCleaner
      *  syndication
      *  category
      * are all urls
+     * */
 }
 
 
