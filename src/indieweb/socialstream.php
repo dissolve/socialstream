@@ -71,13 +71,13 @@ function clean_array_after_recurse($in)
     if (isset($in['url']) && !is_array($in['url']) && !isset($in['@id'])) {
         $in['@id'] = $in['url']; 
     }
+     */
     if (isset($in['type']) && !is_array($in['type'])) {
         $new_val = preg_replace('/^h-/', '', $in['type']);
         //do more logic here
-        $in['@type'] = $new_val;
-        unset($in['type']);
+        $in['type'] = $new_val;
+        //unset($in['type']);
     }
-     */
     return $in;
 }
 
