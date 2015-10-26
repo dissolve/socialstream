@@ -61,6 +61,13 @@ function clean_array_before_recurse($in)
 
 function clean_array_after_recurse($in)
 {
+    if (isset($in['children']) && is_hash($in['children'])) {
+        $in['children'] = array($in['children']); 
+    }
+    // JSON-LD looking-ish garbage... there have been people complaining about '@' in values
+    // so i'm not going down this road.  JSON-LD people can easily do this change themselves
+    // if they want to process as JSON-LD
+    /*
     if (isset($in['url']) && !is_array($in['url']) && !isset($in['@id'])) {
         $in['@id'] = $in['url']; 
     }
@@ -70,6 +77,7 @@ function clean_array_after_recurse($in)
         $in['@type'] = $new_val;
         unset($in['type']);
     }
+     */
     return $in;
 }
 
@@ -82,13 +90,16 @@ function clean_item($in)
     return $in;
 }
 
+function is_hash(array $array) {
+    return (bool)count(array_filter(array_keys($array), 'is_string'));
+}
+
 function convert($mf, $lang = 'en')
 {
     $cleaned = clean_node($mf);
-    if(!isset($cleaned['type']) || !isset($cleaned['type'])){
-        $cleaned['children'] = $cleaned;
-    }
-    $cleaned['@lang'] = $lang;
+    //if(is_hash($cleaned)){
+        //$cleaned['@language'] = $lang;
+    //}
 
     return json_encode($cleaned, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 }
