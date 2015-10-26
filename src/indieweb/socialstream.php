@@ -37,30 +37,107 @@ function clean_array_before_recurse($in)
     if (isset($in['alternates'])) {
         unset($in['alternates']);
     }
+
     if (isset($in['rels'])) {
         unset($in['rels']);
     }
-    if (isset($in['value'])) {
+    
+    if(isset($in['html'])){
+        $in['content-type'] = "text/html";
+        $in['value'] = $in['html'];
+        unset($in['html']);
+    } elseif (isset($in['value'])) {
         unset($in['value']);
     }
+
     if (isset($in['properties'])) {
         $prop = $in['properties'];
         unset($in['properties']);
         $in = array_merge($in , $prop);
-        
     }
+
     if(isset($in['url']) && is_array($in['url'])){
+        //TODO: dereference relative URLs
         $in['url'] = array_unique($in['url']);
     }
+
     if(isset($in['name']) && is_array($in['name'])){
         $in['name'] = array_unique($in['name']);
     }
+
     
     return $in;
 }
 
 function clean_array_after_recurse($in)
 {
+    if (isset($in['type']) && !is_array($in['type'])) {
+        $new_val = preg_replace('/^h-/', '', $in['type']);
+        $in['type'] = $new_val;
+    }
+
+    if(isset($in['photo']) && !is_array($in['photo'])){
+        $url = $in['photo'];
+        $in['photo'] = array(
+                //TODO fix urlx
+            'url' => $url,
+            'type' => 'image'
+        );
+    }
+    if(isset($in['photo']) && is_array($in['photo']) && !is_hash($in['photo'])){
+
+        foreach($in['photo'] as &$photo){
+            $url = $photo;
+            $photo = array(
+                //TODO fix urlx
+                'url' => $url,
+                'type' => 'image'
+            );
+        }
+    }
+
+    if(isset($in['video']) && !is_array($in['video'])){
+        $url = $in['video'];
+        $in['video'] = array(
+                //TODO fix urlx
+            'url' => $url,
+            'type' => 'video'
+        );
+    }
+    if(isset($in['video']) && is_array($in['video']) && !is_hash($in['video'])){
+
+        foreach($in['video'] as &$video){
+            $url = $video;
+            $video = array(
+                //TODO fix urlx
+                'url' => $url,
+                'type' => 'video'
+            );
+        }
+    }
+
+    if(isset($in['audio']) && !is_array($in['audio'])){
+        $url = $in['audio'];
+        $in['audio'] = array(
+                //TODO fix urlx
+            'url' => $url,
+            'type' => 'audio'
+        );
+    }
+    if(isset($in['audio']) && is_array($in['audio']) && !is_hash($in['audio'])){
+
+        foreach($in['audio'] as &$audio){
+            $url = $audio;
+            $audio = array(
+                //TODO fix urlx
+                'url' => $url,
+                'type' => 'audio'
+            );
+        }
+    }
+
+
+
     if (isset($in['children']) && is_hash($in['children'])) {
         $in['children'] = array($in['children']); 
     }
@@ -72,12 +149,6 @@ function clean_array_after_recurse($in)
         $in['@id'] = $in['url']; 
     }
      */
-    if (isset($in['type']) && !is_array($in['type'])) {
-        $new_val = preg_replace('/^h-/', '', $in['type']);
-        //do more logic here
-        $in['type'] = $new_val;
-        //unset($in['type']);
-    }
     return $in;
 }
 
