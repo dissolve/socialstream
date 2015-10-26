@@ -133,6 +133,34 @@ class StreamCleaner
             }
         }
 
+        if (isset($in['in-reply-to']) && !is_array($in['in-reply-to'])) {
+            $url = $in['in-reply-to'];
+            $in['in-reply-to'] = array(
+                'url' => $this->sanitizeUrl($url)
+            );
+        }
+        if (isset($in['in-reply-to']) && is_array($in['in-reply-to']) && !$this->isHash($in['in-reply-to'])) {
+            foreach ($in['in-reply-to'] as &$reply) {
+                $url = $reply;
+                $reply = array(
+                    'url' => $this->sanitizeUrl($url)
+                );
+            }
+        }
+        if (isset($in['syndication']) && !is_array($in['syndication'])) {
+            $url = $in['syndication'];
+            $in['syndication'] = array(
+                'url' => $this->sanitizeUrl($url)
+            );
+        }
+        if (isset($in['syndication']) && is_array($in['syndication']) && !$this->isHash($in['syndication'])) {
+            foreach ($in['syndication'] as &$syndication) {
+                $url = $syndication;
+                $syndication = array(
+                    'url' => $this->sanitizeUrl($url)
+                );
+            }
+        }
 
 
         if (isset($in['children']) && $this->isHash($in['children'])) {
@@ -198,10 +226,7 @@ class StreamCleaner
 
 
     /* TODO
-     *  in-reply-to
-     *  syndication
-     *  category
-     * are all urls
+     *  category is sometimes url, at least for me
      * */
 }
 
