@@ -15,11 +15,11 @@ header('Access-Control-Allow-Origin: *');
     "children": "jf2:children",
     "content-type": "jf2:content-type",
     "value": "jf2:value",
-    
+
     //jf2 reserve values
     "image": "jf2:image",
 
-    //base mf2 objects 
+    //base mf2 objects
     "adr": "mf:h-adr",
     "card": "mf:h-card",
     "entry": "mf:h-entry",
@@ -144,8 +144,7 @@ header('Access-Control-Allow-Origin: *');
     "comment": "iwc:comments",
     "like-of": "iwc:like",
     "repost-of": "iwc:repost",
-    "invitee": "iwc:invite",
-
+    "invitee": "iwc:invite"
 
   }
 }
