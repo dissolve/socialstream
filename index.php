@@ -5,6 +5,7 @@ if (!isset($_GET['url'])) {
 }
 
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -36,7 +37,7 @@ if(!empty($scheme) && !empty($host)){
     $base = $scheme . '://' . $host;
 }
 
-$result = IndieWeb\socialstream\convert($mf, $base, 'en-US');
+$result = IndieWeb\socialstream\convert($mf, $base, 'en-US', 'http://stream.thatmustbe.us/jf2.php');
 
 echo($result);
 

@@ -206,19 +206,29 @@ class StreamCleaner
     }
 
 
-    public function clean($mf, $base_url = "", $lang = 'en')
+    public function clean($mf, $base_url = "", $lang = 'en', $context = null)
     {
         $this->url_base = $base_url ;
         $cleaned = $this->cleanNode($mf);
 
         //brutal hack until lang is obtained from the mf2 parser
+       
         if ($this->isHash($cleaned)) {
             $cleaned['lang'] = $lang;
         } elseif ( is_array($cleaned) ) {
             foreach($cleaned as &$entry){
                 $entry['lang'] = $lang;
             }
+            return array(
+                'children'=> $cleaned
+            );
+        
         }
+
+        if($context){
+            $cleaned['@context'] = $context;
+        }
+        
 
         return $cleaned;
 
@@ -231,10 +241,10 @@ class StreamCleaner
 }
 
 
-function convert($mf, $base_url = "", $lang = 'en')
+function convert($mf, $base_url = "", $lang = 'en', $context = null)
 {
     $cleaner = new StreamCleaner();
-    $cleaned = $cleaner->clean($mf, $base_url, $lang);
+    $cleaned = $cleaner->clean($mf, $base_url, $lang, $context);
 
     return json_encode($cleaned, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 }
