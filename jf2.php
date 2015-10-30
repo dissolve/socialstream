@@ -4,9 +4,13 @@ header('Access-Control-Allow-Origin: *');
 ?>
 {
   "@context": {
+<?php // prefixes ?>
     "mf": "http://microformats.org/wiki/",
     "jf2": "https://github.com/w3c-social/Social-Syntax-Brainstorming/wiki/jf2#",
     "iwc": "http://indiewebcamp.com/",
+    "mime": "http://www.iana.org/assignments/media-types/",
+
+<?php // aliases ?>
     "url": "@id",
     "type": "@type",
     "lang": "@language",
@@ -18,6 +22,10 @@ header('Access-Control-Allow-Origin: *');
 
 <?php //jf2 reserve values ?>
     "image": "jf2:image",
+
+<?php //mime types ?>
+    "text/html": "mime:text/html",
+    "text/plain": "mime:text/plain",
 
 <?php //base mf2 objects ?>
     "adr": "mf:h-adr",
@@ -130,7 +138,6 @@ header('Access-Control-Allow-Origin: *');
 
 <?php //draft properties from IWC ?>
     "rsvp": "mf:rsvp",
-
 
 <?php // mf2 experimental ?>
     "x-dietary-preference": "mf:microformats2-experimental-properties#p-x-dietary-preference",
