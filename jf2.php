@@ -10,16 +10,16 @@ header('Access-Control-Allow-Origin: *');
     "url": "@id",
     "type": "@type",
     "lang": "@language",
+    "content-type": "@type",
+    "value": "@value",
 
-    //jf2 reserve words
+<?php //jf2 reserve words ?>
     "children": "jf2:children",
-    "content-type": "jf2:content-type",
-    "value": "jf2:value",
 
-    //jf2 reserve values
+<?php //jf2 reserve values ?>
     "image": "jf2:image",
 
-    //base mf2 objects
+<?php //base mf2 objects ?>
     "adr": "mf:h-adr",
     "card": "mf:h-card",
     "entry": "mf:h-entry",
@@ -35,7 +35,7 @@ header('Access-Control-Allow-Origin: *');
     "review-aggregate": "mf:h-review-aggregate",
     "cite": "mf:h-cite",
 
-    //base mf/mf2 attibutes
+<?php //base mf/mf2 attibutes ?>
     "additional-name": "mf:microformats2#p-additional-name",
     "adr": "mf:microformats2#p-adr",
     "affiliation": "mf:microformats2#p-affiliation",
@@ -113,26 +113,26 @@ header('Access-Control-Allow-Origin: *');
     "worst": "mf:microformats2#p-worst",
     "yield": "mf:microformats2#p-yield",
 
-    //h-cite specific mf2
+<?php //h-cite specific mf2 ?>
     "publication": "mf:h-cite#publication",
     "accessed": "mf:h-cite#dt-accessed",
 
-    // mf back compat aliasing
+<?php // mf back compat aliasing ?>
     "dtend": "end",
     "dtstart": "start",
     "entry-title": "name",
     "fn": "name",
 
-    //rel values that have alternates in mf
+<?php //rel values that have alternates in mf ?>
     "in-reply-to": "mf:rel-in-reply-to",
     "syndication": "mf:rel-syndication",
     "shortlink": "mf:rel-shortlink",
 
-    //draft properties from IWC
+<?php //draft properties from IWC ?>
     "rsvp": "mf:rsvp",
 
 
-    // mf2 experimental
+<?php // mf2 experimental ?>
     "x-dietary-preference": "mf:microformats2-experimental-properties#p-x-dietary-preference",
     "x-pronoun-nominative": "mf:microformats2-experimental-properties#p-x-pronoun-nominative",
     "x-pronoun-oblique": "mf:microformats2-experimental-properties#p-x-pronoun-oblique",
@@ -140,7 +140,7 @@ header('Access-Control-Allow-Origin: *');
     "x-sexual-preference": "mf:microformats2-experimental-properties#p-x-sexual-preference",
     "x-username": "mf:microformats2-experimental-properties#h-x-username",
 
-    // iwc properties
+<?php // iwc properties ?>
     "comment": "iwc:comments",
     "like-of": "iwc:like",
     "repost-of": "iwc:repost",
