@@ -23,7 +23,7 @@ class JsonApiStreamCleaner
         $in = $this->cleanArrayAfterRecurse($in);
 
         if (isset($in['url'])) {
-            if(is_array($in['url'])){
+            if (is_array($in['url'])) {
                 $in['id'] = $in['url'][0];
             } else {
                 $in['id'] = $in['url'];
@@ -55,13 +55,7 @@ class JsonApiStreamCleaner
             unset($in['rels']);
         }
 
-        if (isset($in['html'])) {
-            $in['content-type'] = "text/html";
-            $in['value'] = $in['html'];
-            unset($in['html']);
-        } elseif (isset($in['value'])) {
-            unset($in['value']);
-        }
+
 
         if (isset($in['properties'])) {
             $in['attributes'] = $in['properties'];
@@ -69,13 +63,19 @@ class JsonApiStreamCleaner
         }
 
         if (isset($in['children'])) {
-            $in['relationships'] = $in['children'];
+            if ($this->isHash($in['children'])) {
+                $in['included'] = array($in['children']);
+            } elseif (is_array($in['children'])) {
+                $in['included'] = $in['children'];
+            } else {
+                $in['included'] = array();
+            }
             unset($in['children']);
         }
 
         if (isset($in['url']) && is_array($in['url'])) {
             $in['url'] = array_unique($in['url']);
-            foreach($in['url'] as &$url){
+            foreach ($in['url'] as &$url) {
                 $url = $this->sanitizeUrl($url);
             }
         }
@@ -90,11 +90,56 @@ class JsonApiStreamCleaner
 
     private function cleanArrayAfterRecurse($in)
     {
+        if (isset($in['content']) && is_array($in['content']) && $this->isHash($in['content'])) {
+            if (isset($in['content']['html'])) {
+                $newcontent = $in['content']['html'];
+                $in['content-type'] = 'text/html';
+                $in['content'] = $newcontent;
+            } else {
+                $newcontent = $in['content']['value'];
+                $in['content-type'] = 'text/plain';
+                $in['content'] = $newcontent;
+            }
+        }
         if (isset($in['type']) && !is_array($in['type'])) {
             $new_val = preg_replace('/^h-/', '', $in['type']);
             $in['type'] = $new_val;
         }
 
+        if (is_array($in) && $this->isHash($in)) {
+            foreach ($in as $key => $val) {
+                if (is_array($val) && !$this->isHash($val)) {
+                    $in[$key] = $val[0];
+                }
+            }
+        }
+
+        if (
+            is_array($in)
+            && $this->isHash($in)
+            && isset($in['attributes'])
+            && is_array($in['attributes'])
+            && $this->isHash($in['attributes'])
+        ) {
+            $relationships = array();
+            foreach ($in['attributes'] as $key => $val) {
+                if (is_array($val) && $this->isHash($val)) {
+                    $relationships[$key] = $val;
+                    unset($in['attributes'][$key]);
+                }
+            }
+            if (!empty($relationships)) {
+                if (isset($in['relationships'])) {
+                    $in['relationships'] = array_merge($in['relationships'], $relationships);
+                } else {
+                    $in['relationships'] = $relationships;
+                }
+            }
+        }
+
+        if (isset($in['value'])) {
+            unset($in['value']);
+        }
 
         return $in;
     }
@@ -116,14 +161,14 @@ class JsonApiStreamCleaner
     private function sanitizeUrl($url)
     {
         $split_url = parse_url($url);
-        if(!isset($split_url['host']) || empty($split_url['host'])) {
+        if (!isset($split_url['host']) || empty($split_url['host'])) {
             $split_url['host'] = parse_url($this->url_base, PHP_URL_HOST);
             $split_url['scheme'] = parse_url($this->url_base, PHP_URL_SCHEME);
         }
         $url = $split_url['scheme'] . "://" . $split_url['host'] . $split_url['path'] .
-            (isset($split_url['query']) ? '?' . $split_url['query']  : '' ) .
-            (isset($split_url['fragment']) ? '#' . $split_url['fragment']  : '' );
-        
+            (isset($split_url['query']) ? '?' . $split_url['query'] : '' ) .
+            (isset($split_url['fragment']) ? '#' . $split_url['fragment'] : '' );
+
         return $url;
     }
 
@@ -134,10 +179,10 @@ class JsonApiStreamCleaner
         $cleaned = $this->cleanNode($mf);
 
 
-        if($context){
+        if ($context) {
             $cleaned['@context'] = $context;
         }
-        
+
 
         return $cleaned;
 

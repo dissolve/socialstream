@@ -62,7 +62,7 @@ class StreamCleaner
 
         if (isset($in['url']) && is_array($in['url'])) {
             $in['url'] = array_unique($in['url']);
-            foreach($in['url'] as &$url){
+            foreach ($in['url'] as &$url) {
                 $url = $this->sanitizeUrl($url);
             }
         }
@@ -194,14 +194,14 @@ class StreamCleaner
     private function sanitizeUrl($url)
     {
         $split_url = parse_url($url);
-        if(!isset($split_url['host']) || empty($split_url['host'])) {
+        if (!isset($split_url['host']) || empty($split_url['host'])) {
             $split_url['host'] = parse_url($this->url_base, PHP_URL_HOST);
             $split_url['scheme'] = parse_url($this->url_base, PHP_URL_SCHEME);
         }
         $url = $split_url['scheme'] . "://" . $split_url['host'] . $split_url['path'] .
-            (isset($split_url['query']) ? '?' . $split_url['query']  : '' ) .
-            (isset($split_url['fragment']) ? '#' . $split_url['fragment']  : '' );
-        
+            (isset($split_url['query']) ? '?' . $split_url['query'] : '' ) .
+            (isset($split_url['fragment']) ? '#' . $split_url['fragment'] : '' );
+
         return $url;
     }
 
@@ -212,23 +212,23 @@ class StreamCleaner
         $cleaned = $this->cleanNode($mf);
 
         //brutal hack until lang is obtained from the mf2 parser
-       
+
         if ($this->isHash($cleaned)) {
             $cleaned['lang'] = $lang;
         } elseif ( is_array($cleaned) ) {
-            foreach($cleaned as &$entry){
+            foreach ($cleaned as &$entry) {
                 $entry['lang'] = $lang;
             }
             return array(
-                'children'=> $cleaned
+                'children' => $cleaned
             );
-        
+
         }
 
-        if($context){
+        if ($context) {
             $cleaned['@context'] = $context;
         }
-        
+
 
         return $cleaned;
 
