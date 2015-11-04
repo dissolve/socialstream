@@ -83,8 +83,6 @@
       "shortlink": "mf:rel-shortlink",
       "rsvp": "mf:rsvp",
 
-    "in-reply-to": "mf:rel-in-reply-to",
-
       "mf2ex": "mf:microformats2-experimental-properties#",
       "x-dietary-preference": "mf2ex:p-x-dietary-preference",
       "x-pronoun-nominative": "mf2ex:p-x-pronoun-nominative",
