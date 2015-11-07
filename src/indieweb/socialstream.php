@@ -237,16 +237,35 @@ class StreamCleaner
     }
 
 
+    private function expandKeyVal($key, $val){
+        $result = '';
+        if(in_array($key, array('published','updated', 'created', 'start', 'end', "rev", "reviewed", "accessed"))){
+            $result .= '<span class="dt-'.$key . '">'.$val.'</span>' . "\n";
+        } else if($key == 'url') {
+            $result .= '<span class="u-'.$key . '" href="' . $val . '">'.$val.'</span>' . "\n";
+        } else {
+            $result .= '<span class="p-'.$key . '">'.$val.'</span>' . "\n";
+        }
+        return $result;
+    }
+
     private function expand_internal_properties($data){
+        if(isset($data['type'])){
+            unset($data['type']);
+        }
         $result = '';
         foreach($data as $key => $val){
-            if(!is_array($val)){
-                if(in_array($key, array('published','updated', 'created', 'start', 'end', "rev", "reviewed", "accessed"))){
-                    $result .= '<span class="dt-'.$key . '">'.$val.'</span>' . "\n";
-                } else if($key == 'url') {
-                    $result .= '<span class="u-'.$key . '" href="' . $val . '">'.$val.'</span>' . "\n";
-                } else {
-                    $result .= '<span class="p-'.$key . '">'.$val.'</span>' . "\n";
+            if($key == 'children'){
+                $result .= $this->expand_children($data);
+            } elseif(!is_array($val)){
+                $result .= $this->expandKeyVal($key, $val);
+            } elseif($key == 'content') {
+                $result .= '<span class="e-'.$key . '">'.$val['value'].'</span>' . "\n";
+            } elseif($this->isHash($val)){
+                $result .= $this->expand_object($val, array('p-'.$key));
+            } else {
+                foreach($val as $subval){
+                    $result .= $this->expandKeyVal($key, $subval);
                 }
             }
         }
@@ -254,23 +273,29 @@ class StreamCleaner
     }
 
     private function expand_children($data){
-        return '';
-    }
-
-    private function expand_h_wrapper($data){
-
-        $result = '<div class="h-'.$data['type'].'">' . "\n";
-        $result .= $this->expand_internal_properties($data);
-        $result .= $this->expand_children($data);
-        $result .= '</div>' . "\n";
+        $result = '';
+        if(isset($data['children'])){
+            foreach($data['children'] as $child){
+                $result .= $this->expand_object($child);
+            }
+        }
         return $result;
     }
 
-    private function expand_object($data){
+
+    private function expand_object($data, $classes = array()){
         $result = '';
+        if(isset($data['lang'])){
+            unset($data['lang']);
+        }
 
         if(isset($data['type'])){
-            $result = $this->expand_h_wrapper($data);
+            $classes[] = 'h-'.$data['type'];
+            $result .= '<div class="'. implode(' ', $classes) . '">' . "\n";
+            $result .= $this->expand_internal_properties($data);
+            $result .= '</div>' . "\n";
+        } else {
+            $result = $this->expand_children($data);
         }
 
         return $result;
@@ -286,7 +311,7 @@ class StreamCleaner
             unset($data['@context']);
         }
 
-        $result = $this->expand_h_wrapper($data);
+        $result = $this->expand_object($data);
 
         return $result;
     }
