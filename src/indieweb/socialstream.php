@@ -82,6 +82,7 @@ class StreamCleaner
             $in['type'] = $new_val;
         }
 
+/*
         if (isset($in['photo']) && !is_array($in['photo'])) {
             $url = $in['photo'];
             $in['photo'] = array(
@@ -161,6 +162,7 @@ class StreamCleaner
                 );
             }
         }
+*/
 
 
         if (isset($in['children']) && $this->isHash($in['children'])) {
@@ -235,11 +237,60 @@ class StreamCleaner
     }
 
 
+    private function expand_internal_properties($data){
+        $result = '';
+        foreach($data as $key => $val){
+            if(!is_array($val)){
+                if(in_array($key, array('published','updated', 'created', 'start', 'end', "rev", "reviewed", "accessed"))){
+                    $result .= '<span class="dt-'.$key . '">'.$val.'</span>' . "\n";
+                } else if($key == 'url') {
+                    $result .= '<span class="u-'.$key . '" href="' . $val . '">'.$val.'</span>' . "\n";
+                } else {
+                    $result .= '<span class="p-'.$key . '">'.$val.'</span>' . "\n";
+                }
+            }
+        }
+        return $result;
+    }
+
+    private function expand_children($data){
+        return '';
+    }
+
+    private function expand_h_wrapper($data){
+
+        $result = '<div class="h-'.$data['type'].'">' . "\n";
+        $result .= $this->expand_internal_properties($data);
+        $result .= $this->expand_children($data);
+        $result .= '</div>' . "\n";
+        return $result;
+    }
+
+    private function expand_object($data){
+        $result = '';
+
+        if(isset($data['type'])){
+            $result = $this->expand_h_wrapper($data);
+        }
+
+        return $result;
+    }
+
+
     /* TODO
      *  category is sometimes url, at least for me
      * */
-}
+    public function expand($js){
+        $data = json_decode($js, true);
+        if(isset($data['@context'])){
+            unset($data['@context']);
+        }
 
+        $result = $this->expand_h_wrapper($data);
+
+        return $result;
+    }
+}
 
 function convert($mf, $base_url = "", $lang = 'en', $context = null)
 {
@@ -247,4 +298,12 @@ function convert($mf, $base_url = "", $lang = 'en', $context = null)
     $cleaned = $cleaner->clean($mf, $base_url, $lang, $context);
 
     return json_encode($cleaned, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+}
+
+function revert($js)
+{
+    $cleaner = new StreamCleaner();
+    $expanded = $cleaner->expand($js);
+
+    return $expanded;
 }
