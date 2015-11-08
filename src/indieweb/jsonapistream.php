@@ -90,6 +90,12 @@ class JsonApiStreamCleaner
 
     private function cleanArrayAfterRecurse($in)
     {
+        if (isset($in['attributes']) && is_array($in['attributes']) && $this->isHash($in['attributes'])) {
+            if (isset($in['attributes']['id'])) {
+                $in['id'] = $in['attributes']['id'];
+                unset($in['attributes']['id']);
+            }
+        }
         if (isset($in['content']) && is_array($in['content']) && $this->isHash($in['content'])) {
             if (isset($in['content']['html'])) {
                 $newcontent = $in['content']['html'];
@@ -178,13 +184,9 @@ class JsonApiStreamCleaner
         $this->url_base = $base_url ;
         $cleaned = $this->cleanNode($mf);
 
+        $wrapper = array('data' => $cleaned);
 
-        if ($context) {
-            $cleaned['@context'] = $context;
-        }
-
-
-        return $cleaned;
+        return $wrapper;
 
     }
 

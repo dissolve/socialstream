@@ -237,34 +237,36 @@ class StreamCleaner
     }
 
 
-    private function expandKeyVal($key, $val){
+    private function expandKeyVal($key, $val)
+    {
         $result = '';
-        if(in_array($key, array('published','updated', 'created', 'start', 'end', "rev", "reviewed", "accessed"))){
-            $result .= '<span class="dt-'.$key . '">'.$val.'</span>' . "\n";
-        } else if($key == 'url') {
-            $result .= '<span class="u-'.$key . '" href="' . $val . '">'.$val.'</span>' . "\n";
+        if (in_array($key, array('published','updated', 'created', 'start', 'end', "rev", "reviewed", "accessed"))) {
+            $result .= '<span class="dt-' . $key . '">' . $val . '</span>' . "\n";
+        } else if ($key == 'url') {
+            $result .= '<span class="u-' . $key . '" href="' . $val . '">' . $val . '</span>' . "\n";
         } else {
-            $result .= '<span class="p-'.$key . '">'.$val.'</span>' . "\n";
+            $result .= '<span class="p-' . $key . '">' . $val . '</span>' . "\n";
         }
         return $result;
     }
 
-    private function expand_internal_properties($data){
-        if(isset($data['type'])){
+    private function expandInternalProperties($data)
+    {
+        if (isset($data['type'])) {
             unset($data['type']);
         }
         $result = '';
-        foreach($data as $key => $val){
-            if($key == 'children'){
-                $result .= $this->expand_children($data);
-            } elseif(!is_array($val)){
+        foreach ($data as $key => $val) {
+            if ($key == 'children') {
+                $result .= $this->expandChildren($data);
+            } elseif (!is_array($val)) {
                 $result .= $this->expandKeyVal($key, $val);
-            } elseif($key == 'content') {
-                $result .= '<span class="e-'.$key . '">'.$val['value'].'</span>' . "\n";
-            } elseif($this->isHash($val)){
-                $result .= $this->expand_object($val, array('p-'.$key));
+            } elseif ($key == 'content') {
+                $result .= '<span class="e-' . $key . '">' . $val['value'] . '</span>' . "\n";
+            } elseif ($this->isHash($val)) {
+                $result .= $this->expandObject($val, array('p-' . $key));
             } else {
-                foreach($val as $subval){
+                foreach ($val as $subval) {
                     $result .= $this->expandKeyVal($key, $subval);
                 }
             }
@@ -272,30 +274,32 @@ class StreamCleaner
         return $result;
     }
 
-    private function expand_children($data){
+    private function expandChildren($data)
+    {
         $result = '';
-        if(isset($data['children'])){
-            foreach($data['children'] as $child){
-                $result .= $this->expand_object($child);
+        if (isset($data['children'])) {
+            foreach ($data['children'] as $child) {
+                $result .= $this->expandObject($child);
             }
         }
         return $result;
     }
 
 
-    private function expand_object($data, $classes = array()){
+    private function expandObject($data, $classes = array())
+    {
         $result = '';
-        if(isset($data['lang'])){
+        if (isset($data['lang'])) {
             unset($data['lang']);
         }
 
-        if(isset($data['type'])){
-            $classes[] = 'h-'.$data['type'];
-            $result .= '<div class="'. implode(' ', $classes) . '">' . "\n";
-            $result .= $this->expand_internal_properties($data);
+        if (isset($data['type'])) {
+            $classes[] = 'h-' . $data['type'];
+            $result .= '<div class="' . implode(' ', $classes) . '">' . "\n";
+            $result .= $this->expandInternalProperties($data);
             $result .= '</div>' . "\n";
         } else {
-            $result = $this->expand_children($data);
+            $result = $this->expandChildren($data);
         }
 
         return $result;
@@ -305,13 +309,14 @@ class StreamCleaner
     /* TODO
      *  category is sometimes url, at least for me
      * */
-    public function expand($js){
+    public function expand($js)
+    {
         $data = json_decode($js, true);
-        if(isset($data['@context'])){
+        if (isset($data['@context'])) {
             unset($data['@context']);
         }
 
-        $result = $this->expand_object($data);
+        $result = $this->expandObject($data);
 
         return $result;
     }
