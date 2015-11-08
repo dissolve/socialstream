@@ -45,6 +45,9 @@ or
     <input type="submit" value="Convert to jsonapi" />
    </form>
   </div>
+<div>
+Please report bugs on <a href="http://github.com/dissolve/socialstream/issues">github</a>
+</div>
  </body>
 </html>
 <?php
@@ -113,9 +116,8 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
     } else {
         $js = $_GET['content'];
     }
-    $result = '<html><body><pre>';
-    $result .= htmlentities(IndieWeb\socialstream\revert($js));
-    $result .= '</pre></body></html>';
+    header('Content-Type: application/json');
+    $result = IndieWeb\socialstream\revert($js);
 
 } else {
      $result = 'error';
