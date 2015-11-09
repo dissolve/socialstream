@@ -243,7 +243,7 @@ class StreamCleaner
         if (in_array($key, array('published','updated', 'created', 'start', 'end', "rev", "reviewed", "accessed"))) {
             $result .= '<span class="dt-' . $key . '">' . $val . '</span>' . "\n";
         } else if ($key == 'url') {
-            $result .= '<span class="u-' . $key . '" href="' . $val . '">' . $val . '</span>' . "\n";
+            $result .= '<a class="u-' . $key . '" href="' . $val . '">' . $val . '</a>' . "\n";
         } else {
             $result .= '<span class="p-' . $key . '">' . $val . '</span>' . "\n";
         }

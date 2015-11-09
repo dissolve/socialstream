@@ -2,52 +2,81 @@
 if (!isset($_GET['url']) && !isset($_GET['content'])) {
 ?>
 <html>
+<head>
+<style>
+input[type="submit"]{
+display:block;
+background:lightblue;
+margin-top:10px;
+border-radius:9px;
+}
+form {
+margin-left:20px;
+}
+textarea {
+height:150px;
+width:500px;
+}
+h2::before {
+border: 2px solid black;
+content: "";
+display: block;
+width: 520px;
+}
+h2::after {
+border: 2px solid lightgray;
+content: "";
+display: block;
+width: 520px;
+}
+footer {
+font-size:0.9em
+}
+</style>
+</head>
  <body>
-  <div>
+  <section>
    <h2>Convert MF2 to JF2</h2>
    <form>
     <input name="url" type="text" placeholder="url" />
     <input type="hidden" name="op" value="mf2-jf2" />
     <input type="submit" value="Convert to JF2" />
    </form>
-or
    <form>
     <textarea name="content" type="text" placeholder="mf2 data" ></textarea>
     <input type="hidden" name="op" value="mf2-jf2" />
     <input type="submit" value="Convert to JF2" />
    </form>
-  </div>
-  <div>
+  </section>
+  <section>
    <h2>Convert JF2 to MF2</h2>
    <form>
     <input name="url" type="text" placeholder="url" />
     <input type="hidden" name="op" value="jf2-mf2" />
     <input type="submit" value="Convert to MF2" />
    </form>
-or
    <form>
     <textarea name="content" type="text" placeholder="jf2 data" ></textarea>
     <input type="hidden" name="op" value="jf2-mf2" />
     <input type="submit" value="Convert to MF2" />
    </form>
-  </div>
-  <div>
+  </section>
+  <section>
    <h2>Convert MF2 to jsonapi</h2>
    <form>
     <input name="url" type="text" placeholder="url" />
     <input type="hidden" name="op" value="mf2-jsonapi" />
     <input type="submit" value="Convert to jsonapi" />
    </form>
-or
    <form>
     <textarea name="content" type="text" placeholder="mf2 data" ></textarea>
     <input type="hidden" name="op" value="mf2-jsonapi" />
     <input type="submit" value="Convert to jsonapi" />
    </form>
-  </div>
-<div>
+  </section>
+<footer>
 Please report bugs on <a href="http://github.com/dissolve/socialstream/issues">github</a>
-</div>
+</footer>
  </body>
 </html>
 <?php

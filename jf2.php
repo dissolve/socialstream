@@ -6,7 +6,7 @@ include('jf2.jsonld');
     * need to look at each of these that were removed more closely
 {
   "@context": [
-    "http://www.w3.org/ns/activitystreams", 
+    "http://www.w3.org/ns/activitystreams",
     {
       "mf": "http://microformats.org/wiki/",
       "vcard": "http://www.w3.org/2006/vcard/ns#",
