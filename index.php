@@ -1,6 +1,7 @@
 <?php
 if (!isset($_GET['url']) && !isset($_GET['content'])) {
 ?>
+<!DOCTYPE html>
 <html>
 <head>
 <style>
@@ -32,6 +33,9 @@ width: 520px;
 footer {
 font-size:0.9em
 }
+label {
+display:block;
+}
 </style>
 </head>
  <body>
@@ -53,11 +57,15 @@ font-size:0.9em
    <form>
     <input name="url" type="text" placeholder="url" />
     <input type="hidden" name="op" value="jf2-mf2" />
+    <label for="url-as-html">Return as rendered html?</label>
+    <input id="url-as-html" type="checkbox" name="ashtml" value="1" />
     <input type="submit" value="Convert to MF2" />
    </form>
    <form>
     <textarea name="content" type="text" placeholder="jf2 data" ></textarea>
     <input type="hidden" name="op" value="jf2-mf2" />
+    <label for="content-as-html">Return as rendered html?</label>
+    <input id="content-as-html" type="checkbox" name="ashtml" value="1" />
     <input type="submit" value="Convert to MF2" />
    </form>
   </section>
@@ -145,8 +153,17 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
     } else {
         $js = $_GET['content'];
     }
-    header('Content-Type: application/json');
-    $result = IndieWeb\socialstream\revert($js);
+    if(isset($_GET['ashtml']) && $_GET['ashtml']){
+
+        //todo: add some simple stylesheets
+        $result = '<!DOCTYPE html><html><body>';
+        $result .= IndieWeb\socialstream\revert($js);
+        $result .= '</body></html>';
+
+    } else {
+        header('Content-Type: application/json');
+        $result = IndieWeb\socialstream\revert($js);
+    }
 
 } else {
      $result = 'error';
