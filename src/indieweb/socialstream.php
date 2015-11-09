@@ -77,6 +77,39 @@ class StreamCleaner
 
     private function cleanArrayAfterRecurse($in)
     {
+        // if there is an array of classes, we have to pick one, so we look for knowwn ones first
+        //  if we still cannot decide, we just pick the first one
+        if (isset($in['type']) && is_array($in['type'])) {
+            if(in_array('h-adr', $in['type'])) {
+                $in['type'] = 'h-adr';
+            } elseif(in_array('h-card', $in['type'])) {
+                $in['type'] = 'h-card';
+            } elseif(in_array('h-entry', $in['type'])) {
+                $in['type'] = 'h-entry';
+            } elseif(in_array('h-event', $in['type'])) {
+                $in['type'] = 'h-event';
+            } elseif(in_array('h-feed', $in['type'])) {
+                $in['type'] = 'h-feed';
+            } elseif(in_array('h-geo', $in['type'])) {
+                $in['type'] = 'h-geo';
+            } elseif(in_array('h-item', $in['type'])) {
+                $in['type'] = 'h-item';
+            } elseif(in_array('h-listing', $in['type'])) {
+                $in['type'] = 'h-listing';
+            } elseif(in_array('h-product', $in['type'])) {
+                $in['type'] = 'h-product';
+            } elseif(in_array('h-recipe', $in['type'])) {
+                $in['type'] = 'h-recipe';
+            } elseif(in_array('h-resume', $in['type'])) {
+                $in['type'] = 'h-resume';
+            } elseif(in_array('h-review', $in['type'])) {
+                $in['type'] = 'h-review';
+            } elseif(in_array('h-review-aggregate', $in['type'])) {
+                $in['type'] = 'h-review-aggregate';
+            } else {
+                $in['type'] = $in['type'][0];
+            }
+        }
         if (isset($in['type']) && !is_array($in['type'])) {
             $new_val = preg_replace('/^h-/', '', $in['type']);
             $in['type'] = $new_val;
