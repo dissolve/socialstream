@@ -161,7 +161,7 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
         $result .= '</body></html>';
 
     } else {
-        header('Content-Type: application/json');
+        header('Content-Type: text/plain; charset=UTF-8');
         $result = IndieWeb\socialstream\revert($js);
     }
 
