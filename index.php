@@ -156,7 +156,7 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
     if(isset($_GET['ashtml']) && $_GET['ashtml']){
 
         //todo: add some simple stylesheets
-        $result = '<!DOCTYPE html><html><body>';
+        $result = '<!DOCTYPE html><html><meta charset="utf-8"><body>';
         $result .= IndieWeb\socialstream\revert($js);
         $result .= '</body></html>';
 
