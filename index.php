@@ -99,6 +99,15 @@ if (!isset($_GET['op'])) {
 
 require __DIR__ . '/vendor/autoload.php';
 
+//make sure the URL we are given has a protocol.
+// if not just give it http://
+if (isset($_GET['url'])) {
+    if(!preg_match('%^https?://%', $_GET['url'])){
+        $_GET['url'] = 'http://' .  $_GET['url'];
+
+    }
+}
+
 if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
     header('Content-Type: application/json');
     header('Access-Control-Allow-Origin: *');
