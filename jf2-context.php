@@ -1,4 +1,2 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-include('jf2.jsonld');
+header('Location: https://dissolve.github.io/jf2/jf2-context.jsonld');
