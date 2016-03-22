@@ -150,6 +150,44 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
         $result = IndieWeb\jf2stream\jsonapiconvert($mf, $base);
     }
 
+}elseif ($op == 'mf2-compact') {
+    if (isset($_GET['url'])) {
+        $url = $_GET['url'];
+        $mf = Mf2\fetch($url);
+
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+        if ($scheme == null) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_NOBODY, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_exec($ch);
+
+            $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+
+            curl_close($ch);
+
+            $scheme = parse_url($url, PHP_URL_SCHEME);
+
+        }
+        $host = parse_url($url, PHP_URL_HOST);
+
+        $base = '';
+        if (!empty($scheme) && !empty($host)) {
+            $base = $scheme . '://' . $host;
+        }
+
+    } else {
+        $mf = Mf2\parse($_GET['content']);
+        $base = '';
+    }
+    header('Content-Type: application/json');
+    header('Access-Control-Allow-Origin: *');
+    $cleaned = IndieWeb\mf2stream\reference_format($mf);
+    $result =  json_encode($cleaned, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
 } elseif ($op == 'jf2-mf2') {
     if (isset($_GET['url'])) {
         $ch = curl_init();
