@@ -1,8 +1,8 @@
 <?php
-namespace IndieWeb\socialstream;
+namespace IndieWeb\as2stream;
 
 
-class StreamCleaner
+class AS2StreamConverter
 {
     private $url_base;
     private function cleanNode($in)
@@ -241,7 +241,7 @@ class StreamCleaner
     }
 
 
-    public function clean($mf, $base_url = "", $lang = 'en', $context = null)
+    public function toAs2($mf, $base_url = "", $lang = 'en', $context = null)
     {
         $this->url_base = $base_url ;
         $cleaned = $this->cleanNode($mf);
@@ -297,7 +297,7 @@ class StreamCleaner
             } elseif ($key == 'content') {
                 $result .= '<span class="e-' . $key . '">' . $val['value'] . '</span>' . "\n";
             } elseif ($this->isHash($val)) {
-                $result .= $this->expandObject($val, array('p-' . $key));
+                $result .= $this->object2jf2($val, array('p-' . $key));
             } else {
                 foreach ($val as $subval) {
                     $result .= $this->expandKeyVal($key, $subval);
@@ -309,31 +309,97 @@ class StreamCleaner
 
     private function expandChildren($data)
     {
-        $result = '';
-        if (isset($data['children'])) {
-            foreach ($data['children'] as $child) {
-                $result .= $this->expandObject($child);
-            }
+        if (!is_array($data)) {
+            return $data;
+        }
+
+        $result = array();
+        foreach ($data as $child) {
+            $result[] = $this->object2jf2($child);
         }
         return $result;
     }
 
 
-    private function expandObject($data, $classes = array())
+    private function object2jf2($data, $classes = array())
     {
-        $result = '';
-        if (isset($data['lang'])) {
-            unset($data['lang']);
+        $result = array();
+        if (isset($data['nameMap'])) {
+            $data['name'] = $data['nameMap']['en'];
+            //todo: pass in language or we could just pick one randomly
+            unset($data['nameMap']);
+        }
+        if (isset($data['id']) && !isset($data['url'])) {
+            $data['url'] = $data['id'];
+            //todo: pass in language or we could just pick one randomly
+            unset($data['id']);
+        }
+
+        if (isset($data['nameMap'])){
+            $result['name'] = $data['nameMap']['en'];
+        }
+        if (isset($data['name'])){
+            $result['name'] = $data['name'];
+        }
+        if (isset($data['published'])){
+            $result['published'] = $data['published'];
+        }
+        if (isset($data['image'])){
+
+            if (!is_array($data['image'])) {
+                $result['photo'] = $data['image'];
+            } elseif (isset($data['image']['href'])){
+                $result['photo'] = $data['image']['href'];
+            }
+        }
+        if (isset($data['id'])){
+            $result['url'] = $data['id'];
+        }
+        if (isset($data['@id'])){
+            $result['url'] = $data['@id'];
+        }
+        
+        if (isset($data['actor'])){
+            $result['author'] = $this->object2jf2($data['actor']);
+        }
+        if ( isset($data['items'])) {
+            $result['children'] = $this->expandChildren($data['items']);
         }
 
         if (isset($data['type'])) {
-            $classes[] = 'h-' . $data['type'];
-            $result .= '<div class="' . implode(' ', $classes) . '">' . "\n";
-            $result .= $this->expandInternalProperties($data);
-            $result .= '</div>' . "\n";
-        } else {
-            $result = $this->expandChildren($data);
+            if($data['type'] == 'Collection'){
+                $result['type'] = 'feed';
+            }elseif($data['type'] == 'Add'){
+                $result['type'] = 'entry';
+                if(isset($result['name'])){
+                    $result['summary'] = $result['name'];
+                    unset($result['name']);
+                }
+                if (isset($data['object'])){
+                    if (isset($data['object']['type'])){
+                        if ($data['object']['type'] == 'Image'){
+                            $result['photo'] = $data['object']['id'];
+                        }
+                    }
+                }
+            }elseif($data['type'] == 'Like'){
+                $result['type'] = 'entry';
+                if (isset($data['object']) && isset($data['object']['url'])){
+                    $result['like-of'] = $data['object']['url'];
+                }
+            }elseif($data['type'] == 'Person'){
+                $result['type'] = 'card';
+            } 
         }
+
+
+            //$classes[] = 'h-' . $data['type'];
+            //$result .= '<div class="' . implode(' ', $classes) . '">' . "\n";
+            //$result .= $this->expandInternalProperties($data);
+            //$result .= '</div>' . "\n";
+        //} else {
+            //$result = $this->expandChildren($data);
+        //}
 
         return $result;
     }
@@ -342,31 +408,28 @@ class StreamCleaner
     /* TODO
      *  category is sometimes url, at least for me
      * */
-    public function expand($js)
+    public function toJf2($js)
     {
         $data = json_decode($js, true);
-        if (isset($data['@context'])) {
-            unset($data['@context']);
-        }
 
-        $result = $this->expandObject($data);
+        $result = $this->object2jf2($data);
 
         return $result;
     }
 }
 
-function convert($mf, $base_url = "", $lang = 'en', $context = null)
+function jf2_to_as2($jf2, $base_url = "", $lang = 'en', $context = null)
 {
-    $cleaner = new StreamCleaner();
-    $cleaned = $cleaner->clean($mf, $base_url, $lang, $context);
+    $converter = new AS2StreamConverter();
+    $cleaned = $converter->toAs2($mf, $base_url, $lang, $context);
 
     return json_encode($cleaned, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 }
 
-function revert($js)
+function as2_to_jf2($as2)
 {
-    $cleaner = new StreamCleaner();
-    $expanded = $cleaner->expand($js);
+    $converter = new AS2StreamConverter();
+    $expanded = $converter->toJf2($as2);
 
-    return $expanded;
+    return json_encode($expanded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 }

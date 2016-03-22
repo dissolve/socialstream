@@ -145,9 +145,9 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
         $base = '';
     }
     if ($op == 'mf2-jf2') {
-        $result = IndieWeb\socialstream\convert($mf, $base, 'en-US', 'https://dissolve.github.io/jf2/jf2-context.jsonld');
+        $result = IndieWeb\jf2stream\convert($mf, $base, 'en-US', 'https://dissolve.github.io/jf2/jf2-context.jsonld');
     } else {
-        $result = IndieWeb\socialstream\jsonapiconvert($mf, $base);
+        $result = IndieWeb\jf2stream\jsonapiconvert($mf, $base);
     }
 
 } elseif ($op == 'jf2-mf2') {
@@ -166,12 +166,12 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
 
         //todo: add some simple stylesheets
         $result = '<!DOCTYPE html><html><meta charset="utf-8"><body>';
-        $result .= IndieWeb\socialstream\revert($js);
+        $result .= IndieWeb\jf2stream\revert($js);
         $result .= '</body></html>';
 
     } else {
         header('Content-Type: text/plain; charset=UTF-8');
-        $result = IndieWeb\socialstream\revert($js);
+        $result = IndieWeb\jf2stream\revert($js);
     }
 
 } else {

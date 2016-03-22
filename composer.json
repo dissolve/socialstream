@@ -15,8 +15,10 @@
   },
   "autoload": {
     "files": [
-      "src/indieweb/socialstream.php",
-      "src/indieweb/jsonapistream.php"
+      "src/indieweb/jf2stream.php",
+      "src/indieweb/mf2stream.php",
+      "src/indieweb/jsonapistream.php",
+      "src/indieweb/as2stream.php"
     ]    
   }
 }
