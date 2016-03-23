@@ -188,6 +188,24 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
     $cleaned = IndieWeb\mf2stream\reference_format($mf);
     $result =  json_encode($cleaned, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
+} elseif ($op == 'as2-jf2') {
+    if (isset($_GET['url'])) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/activity+json'));
+        curl_setopt($ch, CURLOPT_URL, $_GET['url']);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $as2 = curl_exec($ch);
+
+    } else {
+        $as2 = $_GET['content'];
+    }
+
+    header('Content-Type: application/json');
+    header('Access-Control-Allow-Origin: *');
+    $result = IndieWeb\as2stream\as2_to_jf2($as2);
+
 } elseif ($op == 'jf2-mf2') {
     if (isset($_GET['url'])) {
         $ch = curl_init();

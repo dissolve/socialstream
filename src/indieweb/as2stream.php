@@ -315,7 +315,10 @@ class AS2StreamConverter
 
         $result = array();
         foreach ($data as $child) {
-            $result[] = $this->object2jf2($child);
+            $returned = $this->object2jf2($child);
+            if($returned){
+                $result[] = $returned;
+            }
         }
         return $result;
     }
@@ -323,16 +326,14 @@ class AS2StreamConverter
 
     private function object2jf2($data, $classes = array())
     {
+        if(!is_array($data)){
+            return $data;
+        }
         $result = array();
         if (isset($data['nameMap'])) {
             $data['name'] = $data['nameMap']['en'];
             //todo: pass in language or we could just pick one randomly
             unset($data['nameMap']);
-        }
-        if (isset($data['id']) && !isset($data['url'])) {
-            $data['url'] = $data['id'];
-            //todo: pass in language or we could just pick one randomly
-            unset($data['id']);
         }
 
         if (isset($data['nameMap'])){
@@ -354,9 +355,11 @@ class AS2StreamConverter
         }
         if (isset($data['id'])){
             $result['url'] = $data['id'];
+            unset($data['id']);
         }
         if (isset($data['@id'])){
             $result['url'] = $data['@id'];
+            unset($data['@id']);
         }
         
         if (isset($data['actor'])){
@@ -421,6 +424,10 @@ class AS2StreamConverter
                     $result['content'] = $result['name'];
                     unset($result['name']);
                 }
+            } else {
+                //return null;  //Note: this is one option and would just remove all unrecognized types,
+                                // will probably do this after other things have been formatted correctly
+                $result['type'] = 'as2-' . $data['type'];
             } 
         }
 
