@@ -362,6 +362,9 @@ class AS2StreamConverter
         if (isset($data['actor'])){
             $result['author'] = $this->object2jf2($data['actor']);
         }
+        if (isset($data['attributedTo'])){
+            $result['author'] = $this->object2jf2($data['attributedTo']);
+        }
         if ( isset($data['items'])) {
             $result['children'] = $this->expandChildren($data['items']);
         }
@@ -369,7 +372,10 @@ class AS2StreamConverter
         if (isset($data['type'])) {
             if($data['type'] == 'Collection'){
                 $result['type'] = 'feed';
+
+
             }elseif($data['type'] == 'Add'){
+
                 $result['type'] = 'entry';
                 if(isset($result['name'])){
                     $result['summary'] = $result['name'];
@@ -379,16 +385,42 @@ class AS2StreamConverter
                     if (isset($data['object']['type'])){
                         if ($data['object']['type'] == 'Image'){
                             $result['photo'] = $data['object']['id'];
+                            if(!isset($data['url'])){
+                                $result['url'] = $data['object']['id'];
+                            }
                         }
                     }
                 }
+
+            }elseif($data['type'] == 'Create'){
+                $result['type'] = 'entry';
+                if (isset($data['object'])) {
+                    if(!is_array($data['object'])) {
+                        $result['url'] = $data['object'];
+                    } elseif (isset($data['object']['id'])){
+                        $result['url'] = $data['object']['id'];
+                    }
+                }
+
             }elseif($data['type'] == 'Like'){
                 $result['type'] = 'entry';
-                if (isset($data['object']) && isset($data['object']['url'])){
-                    $result['like-of'] = $data['object']['url'];
+                if (isset($data['object'])) {
+                    if(!is_array($data['object'])) {
+                        $result['like-of'] = $data['object'];
+                    } elseif (isset($data['object']['id'])){
+                        $result['like-of'] = $data['object']['id'];
+                    }
                 }
+
             }elseif($data['type'] == 'Person'){
                 $result['type'] = 'card';
+
+            }elseif($data['type'] == 'Note'){
+                $result['type'] = 'entry';
+                if(isset($result['name'])){
+                    $result['content'] = $result['name'];
+                    unset($result['name']);
+                }
             } 
         }
 
