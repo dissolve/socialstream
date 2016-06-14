@@ -82,6 +82,19 @@ display:block;
     <input type="submit" value="Convert to jsonapi" />
    </form>
   </section>
+  <section>
+   <h2>Convert MF2 to AS2</h2>
+   <form>
+    <input name="url" type="text" placeholder="url" />
+    <input type="hidden" name="op" value="mf2-as2" />
+    <input type="submit" value="Convert to AS2" />
+   </form>
+   <form>
+    <textarea name="content" type="text" placeholder="mf2 data" ></textarea>
+    <input type="hidden" name="op" value="mf2-as2" />
+    <input type="submit" value="Convert to AS2" />
+   </form>
+  </section>
 <footer>
 Please report bugs on <a href="http://github.com/dissolve/socialstream/issues">github</a>
 </footer>
@@ -150,7 +163,46 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
         $result = IndieWeb\jf2stream\jsonapiconvert($mf, $base);
     }
 
-}elseif ($op == 'mf2-compact') {
+} elseif ($op == 'mf2-as2'){
+    header('Content-Type: application/json');
+    header('Access-Control-Allow-Origin: *');
+
+    if (isset($_GET['url'])) {
+        $url = $_GET['url'];
+        $mf = Mf2\fetch($url);
+
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+        if ($scheme == null) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_NOBODY, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_exec($ch);
+
+            $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+
+            curl_close($ch);
+
+            $scheme = parse_url($url, PHP_URL_SCHEME);
+
+        }
+        $host = parse_url($url, PHP_URL_HOST);
+
+        $base = '';
+        if (!empty($scheme) && !empty($host)) {
+            $base = $scheme . '://' . $host;
+        }
+
+    } else {
+        $mf = Mf2\parse($_GET['content']);
+        $base = '';
+    }
+    $result = IndieWeb\as2mf2stream\mf2_to_as2($mf, $base);
+    
+
+} elseif ($op == 'mf2-compact') {
     if (isset($_GET['url'])) {
         $url = $_GET['url'];
         $mf = Mf2\fetch($url);

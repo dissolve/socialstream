@@ -17,6 +17,7 @@
     "files": [
       "src/indieweb/jf2stream.php",
       "src/indieweb/mf2stream.php",
+      "src/indieweb/as2mf2stream.php",
       "src/indieweb/jsonapistream.php",
       "src/indieweb/as2stream.php"
     ]    
