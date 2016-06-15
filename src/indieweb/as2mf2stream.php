@@ -32,6 +32,14 @@ class AS2MF2StreamConverter
 
         // todo recognize type
         if(isset($in['rsvp'])){
+
+            if(isset($in['url'])){
+                $result['id'] = $in['url'];
+            }
+            if(isset($in['uid'])){
+                $result['id'] = $in['uid'];
+            }
+
             if( $in['rsvp'] == 'Yes' || $in['rsvp'] == 'YES' || $in['rsvp'] == 'yes'){
                 $result['type'] = 'Accept';
                 $result['name'] = $author_name . ' accepted an invitation';
@@ -51,29 +59,58 @@ class AS2MF2StreamConverter
 
         } elseif(isset($in['in-reply-to'])){
 
-            $result['type'] = "Create";
             $object = array();
             $object['type'] = 'Note';
             $object['inReplyTo'] = $in['in-reply-to']; //only if this is just a url
             $object['content'] = $in['content']['value'];
+            $object['name'] = $in['content']['value'];
             $object['mediaType'] = $in['content']['content-type'];
+
+            if(isset($in['url'])){
+                $result['id'] = $in['url'];
+                $object['id'] = $in['url'];
+            }
+            if(isset($in['uid'])){
+                $result['id'] = $in['uid'];
+                $object['id'] = $in['uid'];
+            }
+
+            $result['type'] = "Create";
+            $result['name'] = $author_name . ' created a reply';
             $result['actor'] = $actor;
             $result['object'] = $object;
 
         } elseif(isset($in['like-of'])){
-            $result['name'] = $author_name . ' liked a post';
+
+            if(isset($in['url'])){
+                $result['id'] = $in['url'];
+            }
+            if(isset($in['uid'])){
+                $result['id'] = $in['uid'];
+            }
             $result['type'] = 'Like';
+            $result['name'] = $author_name . ' liked a post';
             $result['actor'] = $actor;
             $result['object'] = $in['like-of']; //only if this is just a url
 
         } else {
 
-            $result['type'] = "Create";
             $object = array();
             $object['type'] = 'Note';
             $object['content'] = $in['content']['value'];
+            $object['name'] = $in['content']['value'];
             $object['mediaType'] = $in['content']['content-type'];
 
+            if(isset($in['url'])){
+                $result['id'] = $in['url'];
+                $object['id'] = $in['url'];
+            }
+            if(isset($in['uid'])){
+                $result['id'] = $in['uid'];
+                $object['id'] = $in['uid'];
+            }
+            $result['type'] = "Create";
+            $result['name'] = $author_name . ' created a note';
             $result['actor'] = $actor;
             $result['object'] = $object;
         }
@@ -325,6 +362,13 @@ class AS2MF2StreamConverter
 
         } elseif(isset($cleaned['type']) && $cleaned['type'] == 'feed'){
             $as2['type'] = "Collection";
+            $as2['name'] = "A Collection";
+            if(isset($cleaned['url'])){
+                $as2['id'] = $cleaned['url'];
+            }
+            if(isset($cleaned['uid'])){
+                $as2['id'] = $cleaned['uid'];
+            }
             $as2['items'] = array();
             foreach($cleaned['children'] as $item){
                 $child = $this->toAs2_recurse($item);
@@ -337,6 +381,7 @@ class AS2MF2StreamConverter
             }
         } elseif(is_array($cleaned) && !isset($cleaned['type'])) {
             $as2['type'] = "Collection";
+            $as2['name'] = "A Collection";
             $as2['items'] = array();
             foreach($cleaned as $item){
                 $child = $this->toAs2_recurse($item);
