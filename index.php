@@ -164,7 +164,8 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
     }
 
 } elseif ($op == 'mf2-as2'){
-    header('Content-Type: application/json');
+    header('Content-Type: application/activity+json');
+    //header('Content-Type: application/json');
     header('Access-Control-Allow-Origin: *');
 
     if (isset($_GET['url'])) {
