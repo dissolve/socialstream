@@ -1,5 +1,5 @@
 {
   "@context": [
-    "https://dissolve.github.io/jf2/jf2-context.jsonld"
+    "http://www.w3.org/ns/jf2"
   ]
 }

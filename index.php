@@ -158,7 +158,7 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
         $base = '';
     }
     if ($op == 'mf2-jf2') {
-        $result = IndieWeb\jf2stream\convert($mf, $base, 'en-US', 'https://dissolve.github.io/jf2/jf2-context.jsonld');
+        $result = IndieWeb\jf2stream\convert($mf, $base, 'en-US', 'http://www.w3.org/ns/jf2');
     } else {
         $result = IndieWeb\jf2stream\jsonapiconvert($mf, $base);
     }
