@@ -223,7 +223,7 @@ class Jf2StreamCleaner
 
     private function isHash(array $array)
     {
-        return (bool)count(array_filter(array_keys($array), 'is_string'));
+        return is_array($in) && count(array_filter(array_keys($in), 'is_string')) > 0;
     }
 
     private function sanitizeUrl($url)
