@@ -281,9 +281,9 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
         $result = '<!DOCTYPE html><html><head><meta charset="utf-8">';
         if(isset($_GET['style']) && !empty($_GET['style'])){
             if(preg_match('/^https?:\/\//', $_GET['style'])){
-                $result .= '<link rel="stylesheet" src="'.($_GET['style']).'" />';
+                $result .= '<link rel="stylesheet" src="'.str_replace(array('<', '>'), array('%3C', '%3E'), $_GET['style']).'" />';
             } else {
-                $result .= '<style>'.($_GET['style']).'</style>';
+                $result .= '<style>/*<![CDATA[*/'.str_replace('<', '&lt;', $_GET['style']).'/*]]>*/</style>';
             }
         }
         $result .= '</head><body>';
