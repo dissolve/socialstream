@@ -22,7 +22,7 @@ class AS2StreamConverter
 
         $in = $this->cleanArrayAfterRecurse($in);
 
-        if (count($in) == 1 && !isset($in['url']) && !isset($in['content-type']) && !isset($in['type'])) {
+        if (count($in) == 1 && !isset($in['url']) && !isset($in['html']) && !isset($in['type'])) {
             return array_shift($in);
             // no need to recurse here as this item
             // has to have already been cleaned by recursive call above
@@ -47,9 +47,8 @@ class AS2StreamConverter
         }
 
         if (isset($in['html'])) {
-            $in['content-type'] = "text/html";
-            $in['value'] = $in['html'];
-            unset($in['html']);
+            $in['text'] = $in['value'];
+            unset($in['value']);
         } elseif (isset($in['value'])) {
             unset($in['value']);
         }
@@ -295,7 +294,15 @@ class AS2StreamConverter
             } elseif (!is_array($val)) {
                 $result .= $this->expandKeyVal($key, $val);
             } elseif ($key == 'content') {
-                $result .= '<span class="e-' . $key . '">' . $val['value'] . '</span>' . "\n";
+                if ($this->isHash($val)) {
+                    if(isset($val['html'])){
+                        $result .= '<span class="e-' . $key . '">' . $val['html'] . '</span>' . "\n";
+                    } else {
+                        $result .= '<span class="e-' . $key . '">' . $val['text'] . '</span>' . "\n";
+                    }
+                } else {
+                    $result .= '<span class="e-' . $key . '">' . $val . '</span>' . "\n";
+                }
             } elseif ($this->isHash($val)) {
                 $result .= $this->object2jf2($val, array('p-' . $key));
             } else {

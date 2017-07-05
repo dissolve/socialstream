@@ -22,7 +22,7 @@ class Jf2StreamCleaner
 
         $in = $this->cleanArrayAfterRecurse($in);
 
-        if (count($in) == 1 && !isset($in['url']) && !isset($in['content-type']) && !isset($in['type'])) {
+        if (count($in) == 1 && !isset($in['url']) && !isset($in['html']) && !isset($in['type'])) {
             return array_shift($in);
             // no need to recurse here as this item
             // has to have already been cleaned by recursive call above
@@ -222,7 +222,7 @@ class Jf2StreamCleaner
         return $in;
     }
 
-    private function isHash(array $array)
+    private function isHash($in)
     {
         return is_array($in) && count(array_filter(array_keys($in), 'is_string')) > 0;
     }
@@ -276,8 +276,10 @@ class Jf2StreamCleaner
         $result = '';
         if (in_array($key, array('published','updated', 'created', 'start', 'end', "rev", "reviewed", "accessed"))) {
             $result .= '<span class="dt-' . $key . '">' . $val . '</span>' . "\n";
-        } else if ($key == 'url') {
+        } elseif ($key == 'url') {
             $result .= '<a class="u-' . $key . '" href="' . $val . '">' . $val . '</a>' . "\n";
+        } elseif ($key == 'photo') {
+            $result .= '<img class="u-' . $key . '" src="' . $val . '">' . "\n";
         } else {
             $result .= '<span class="p-' . $key . '">' . $val . '</span>' . "\n";
         }
@@ -286,19 +288,45 @@ class Jf2StreamCleaner
 
     private function expandInternalProperties($data)
     {
+
+        $result = '';
         if (isset($data['type'])) {
+            if($data['type'] == 'card'){
+                if(isset($data['url']) && isset($data['name'])){
+                    if(isset($data['photo'])){
+                        $result .= '<a class="u-url p-name" href="' . $data['url'] . '"><img class="u-photo" title="'.$data['name'].'" src="'.$data['photo'].'">' . $data['name'] . '</a>' . "\n";
+                        unset($data['photo']);
+                    } else {
+                        $result .= '<a class="u-url p-name" href="' . $data['url'] . '">' . $data['name'] . '</a>' . "\n";
+                    }
+                    unset($data['url']);
+                    unset($data['name']);
+                }
+            } elseif($data['type'] == 'entry'){
+                if(isset($data['url'])){
+                    $result .= '<a class="u-url" href="' . $data['url'] . '">Permalink</a>' . "\n";
+                    unset($data['url']);
+                }
+            }
             unset($data['type']);
         }
-        $result = '';
         foreach ($data as $key => $val) {
             if ($key == 'children') {
                 $result .= $this->expandChildren($data);
+            } elseif ($this->isHash($val)) {
+                $result .= $this->expandObject($val, array('p-' . $key));
             } elseif (!is_array($val)) {
                 $result .= $this->expandKeyVal($key, $val);
             } elseif ($key == 'content') {
-                $result .= '<span class="e-' . $key . '">' . $val['value'] . '</span>' . "\n";
-            } elseif ($this->isHash($val)) {
-                $result .= $this->expandObject($val, array('p-' . $key));
+                if ($this->isHash($val)) {
+                    if(isset($val['html'])){
+                        $result .= '<span class="e-' . $key . '">' . $val['html'] . '</span>' . "\n";
+                    } else {
+                        $result .= '<span class="e-' . $key . '">' . $val['text'] . '</span>' . "\n";
+                    }
+                } else {
+                    $result .= '<span class="e-' . $key . '">' . $val . '</span>' . "\n";
+                }
             } else {
                 foreach ($val as $subval) {
                     $result .= $this->expandKeyVal($key, $subval);

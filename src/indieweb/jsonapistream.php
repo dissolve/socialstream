@@ -30,7 +30,7 @@ class JsonApiStreamCleaner
             }
         }
 
-        if (count($in) == 1 && !isset($in['url']) && !isset($in['content-type']) && !isset($in['type'])) {
+        if (count($in) == 1 && !isset($in['url']) && !isset($in['html']) && !isset($in['type'])) {
             return array_shift($in);
             // no need to recurse here as this item
             // has to have already been cleaned by recursive call above
@@ -102,7 +102,7 @@ class JsonApiStreamCleaner
                 $in['content-type'] = 'text/html';
                 $in['content'] = $newcontent;
             } else {
-                $newcontent = $in['content']['value'];
+                $newcontent = $in['content']['text'];
                 $in['content-type'] = 'text/plain';
                 $in['content'] = $newcontent;
             }
