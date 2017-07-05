@@ -47,9 +47,10 @@ class Jf2StreamCleaner
         }
 
         if (isset($in['html'])) {
-            $in['content-type'] = "text/html";
-            $in['value'] = $in['html'];
-            unset($in['html']);
+            //$in['content-type'] = "text/html";
+            //$in['html'] = $in['html'];
+            $in['text'] = $in['value'];
+            unset($in['value']);
         } elseif (isset($in['value'])) {
             unset($in['value']);
         }

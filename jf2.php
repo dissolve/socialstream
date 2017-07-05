@@ -1,2 +1,2 @@
 <?php
-header('Location: https://dissolve.github.io/jf2/jf2-context.jsonld');
+header('Location: http://www.w3.org/ns/jf2');
