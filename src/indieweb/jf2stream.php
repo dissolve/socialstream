@@ -294,10 +294,10 @@ class Jf2StreamCleaner
             if($data['type'] == 'card'){
                 if(isset($data['url']) && isset($data['name'])){
                     if(isset($data['photo'])){
-                        $result .= '<a class="u-url p-name" href="' . $data['url'] . '"><img class="u-photo" title="'.$data['name'].'" src="'.$data['photo'].'">' . $data['name'] . '</a>' . "\n";
+                        $result .= '<a class="u-url" href="' . $data['url'] . '"><img class="u-photo" title="'.$data['name'].'" src="'.$data['photo'].'"><span class="p-name">' . $data['name'] . '</span></a>' . "\n";
                         unset($data['photo']);
                     } else {
-                        $result .= '<a class="u-url p-name" href="' . $data['url'] . '">' . $data['name'] . '</a>' . "\n";
+                        $result .= '<a class="u-url" href="' . $data['url'] . '"><span class="p-name">' . $data['name'] . '</span></a>' . "\n";
                     }
                     unset($data['url']);
                     unset($data['name']);
