@@ -58,14 +58,18 @@ display:block;
     <input name="url" type="text" placeholder="url" />
     <input type="hidden" name="op" value="jf2-mf2" />
     <label for="url-as-html">Return as rendered html?</label>
-    <input id="url-as-html" type="checkbox" name="ashtml" value="1" />
+    <input id="url-as-html" type="checkbox" name="ashtml" value="1" /><br>
+    <label for="style-for-html">Include Styles in HTML</label>
+    <input id="style-for-html" type="text" name="style" placeholder="Url or actual styles"/>
     <input type="submit" value="Convert to MF2" />
    </form>
    <form>
     <textarea name="content" type="text" placeholder="jf2 data" ></textarea>
     <input type="hidden" name="op" value="jf2-mf2" />
     <label for="content-as-html">Return as rendered html?</label>
-    <input id="content-as-html" type="checkbox" name="ashtml" value="1" />
+    <input id="content-as-html" type="checkbox" name="ashtml" value="1" /><br>
+    <label for="style-for-html">Include Styles in HTML</label>
+    <input id="style-for-html" type="text" name="style" placeholder="Url or actual styles"/>
     <input type="submit" value="Convert to MF2" />
    </form>
   </section>
@@ -274,7 +278,15 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
     if(isset($_GET['ashtml']) && $_GET['ashtml']){
 
         //todo: add some simple stylesheets
-        $result = '<!DOCTYPE html><html><meta charset="utf-8"><body>';
+        $result = '<!DOCTYPE html><html><head><meta charset="utf-8">';
+        if(isset($_GET['style']) && !empty($_GET['style'])){
+            if(preg_match('/^https?:\/\//', $_GET['style'])){
+                $result .= '<link rel="stylesheet" src="'.($_GET['style']).'" />';
+            } else {
+                $result .= '<style>'.($_GET['style']).'</style>';
+            }
+        }
+        $result .= '</head><body>';
         $result .= IndieWeb\jf2stream\revert($js);
         $result .= '</body></html>';
 
