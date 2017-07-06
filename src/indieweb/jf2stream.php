@@ -276,6 +276,10 @@ class Jf2StreamCleaner
         $result = '';
         if (in_array($key, array('published','updated', 'created', 'start', 'end', "rev", "reviewed", "accessed"))) {
             $result .= '<span class="dt-' . $key . '">' . $val . '</span>' . "\n";
+        } elseif (in_array($key, array('rsvp','wm-private'))) {
+            $result .= '<data class="p-' . $key . '" value="' . $val . '"></data>' . "\n";
+        } elseif ($key == 'wm-property') {
+            $result .= '<data class="p-' . $key . '" value="' . $val . '">'.$val.'</data>' . "\n";
         } elseif ($key == 'url') {
             $result .= '<a class="u-' . $key . '" href="' . $val . '">' . $val . '</a>' . "\n";
         } elseif ($key == 'photo') {
