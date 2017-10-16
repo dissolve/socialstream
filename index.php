@@ -61,6 +61,8 @@ display:block;
     <input id="url-as-html" type="checkbox" name="ashtml" value="1" /><br>
     <label for="style-for-html">Include Styles in HTML</label>
     <input id="style-for-html" type="text" name="style" placeholder="Url or actual styles"/>
+    <label for="target-for-html">Target Parent frame (Top is default)</label>
+    <input id="target-for-html" type="checkbox" name="targetparent" value="1" /><br>
     <input type="submit" value="Convert to MF2" />
    </form>
    <form>
@@ -70,6 +72,8 @@ display:block;
     <input id="content-as-html" type="checkbox" name="ashtml" value="1" /><br>
     <label for="style-for-html">Include Styles in HTML</label>
     <input id="style-for-html" type="text" name="style" placeholder="Url or actual styles"/>
+    <label for="target-for-html">Target Parent frame (Top is default)</label>
+    <input id="target-for-html" type="checkbox" name="targetparent" value="1" /><br>
     <input type="submit" value="Convert to MF2" />
    </form>
   </section>
@@ -285,6 +289,11 @@ if ($op == 'mf2-jf2' || $op == 'mf2-jsonapi') {
             } else {
                 $result .= '<style>/*<![CDATA[*/'.str_replace('<', '&lt;', $_GET['style']).'/*]]>*/</style>';
             }
+        }
+        if(isset($_GET['targetparent']) && $_GET['targetparent'] == '1'){
+            $result .= '<base target="_parent" />';
+        } else {
+            $result .= '<base target="_top" />';
         }
         $result .= '</head><body>';
         $result .= IndieWeb\jf2stream\revert($js);
